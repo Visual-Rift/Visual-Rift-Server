@@ -1,0 +1,20 @@
+# Use an official lightweight Python image as a base image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Install Git
+RUN apt-get update && apt-get install -y git
+
+# ARG instruction defines a build-time variable for the GitHub repository URL
+ARG GITHUB_REPO_URL
+
+# Clone the repository from GitHub
+RUN git clone ${GITHUB_REPO_URL} .
+
+# Expose port 8000 to the outside world
+EXPOSE 8000
+
+# Run the Python HTTP server when the container launches
+CMD ["python", "-m", "http.server", "8000"]

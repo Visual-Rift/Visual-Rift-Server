@@ -1,0 +1,26 @@
+# Use the base Node.js LTS image
+FROM node:lts
+
+# Set the working directory
+WORKDIR /app
+
+# ARG to get GITHUB_URL from build command
+ARG GITHUB_URL
+
+# Clone the repository
+RUN git clone $GITHUB_URL .
+
+# Install dependencies
+RUN npm install
+
+# Build the application
+RUN npm run build
+
+# ARG to get PORT from build command
+ARG PORT
+
+# Expose the specified port
+EXPOSE $PORT
+
+# Start the application with the specified port
+CMD ["npm", "run", "dev", "--", "--host"]

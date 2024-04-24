@@ -19,13 +19,11 @@ variable "region" {
 variable "access_key" {
   type = string
   description = "access key"
-  default = "AKIA232UVZYDHGH7DVVA"
 }
 
 variable "secret_key" {
   type = string
   description = "secret key"
-  default = "ml/YiKjxamxRSyx2L39MYYm8KjW4iJYLIAZHPIcj"
 }
 
 terraform {

@@ -62,6 +62,13 @@ export async function appendAroundText(
     throw new Error(`Error appending around text: ${error.message}`);
   }
 }
+export async function writeFile(filePath, content) {
+  try {
+    fs.writeFile(filePath, content, { encoding: "utf8" });
+  } catch (error) {
+    throw new Error(`Error writing to file: ${error.message}`);
+  }
+}
 export async function overwriteEntireFile(filePath, content) {
   try {
     await fs.writeFile(filePath, content, { encoding: "utf-8" });

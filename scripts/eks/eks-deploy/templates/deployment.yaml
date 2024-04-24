@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: frontend
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 3
   selector:
     matchLabels:
-      app: app
+      app: frontend
   template:
     metadata:
       labels:
-        app: app
+        app: frontend
     spec:
       containers:
-        - name: app-container
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: frontend
+          image: vidhant/frontend
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: 80

@@ -1,0 +1,2 @@
+./configureec2withkeypair.sh ayroid 1 t2.micro ami-03f4878755434977f Ayroid
+key pair name count instance type ami instance name

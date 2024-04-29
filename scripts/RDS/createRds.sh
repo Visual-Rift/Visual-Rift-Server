@@ -82,4 +82,4 @@ aws rds create-db-instance \
 echo "RDS instance creation initiated. Check AWS Console for status." 
 
 
-# ./createRds.sh --identifier my-rds-instance --engine MySQL --version 5.7 --username admin --password password123 --class db.t3.micro --region ap-south-1 --allocated-storage 5 > /dev/null
+# ./createRds.sh --identifier my-rds-instance --engine MySQL --version 5.7 --username admin --password password123 --class db.t3.micro --region us-east-1 --allocated-storage 5

@@ -1,0 +1,3 @@
+./createS3.sh keshav5432 us-east-1
+
+./deleteS3.sh keshav5432

@@ -1,6 +1,0 @@
-VPC created: vpc-079ec2d73edee2420
-Subnet created: subnet-0edd2ba9399a440e1
-Subnet created: subnet-0235d4552e13cc823
-Internet Gateway created: igw-00b817bfca39e67f9
-Route table created: rtb-04728038ef13e35bd
-Route table created: rtb-09a612fd16031aa75

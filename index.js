@@ -7,9 +7,12 @@ dotenv.config();
 
 // ROUTERS
 import { EC2CONFIGURATIONROUTER } from "./routers/ec2ConfigurationRouter.js";
-import { MERNCONFIGURATIONROUTER} from "./routers/mernConfigurationRouter.js";
+import { MERNCONFIGURATIONROUTER } from "./routers/mernConfigurationRouter.js";
 import { CLUSTERNAMEROUTER } from "./routers/clusterNameRouter.js";
 import { QUICKDEPLOYROUTER } from "./routers/quickDeployRouter.js";
+
+import { RDSSCRIPTROUTER } from "./routers/rdsScriptRouter.js";
+import { EC2SCRIPTROUTER } from "./routers/ec2ScriptRouter.js";
 
 //constants
 const PORT = process.env.PORT || 3000;
@@ -34,13 +37,15 @@ app.use("/api/v1/test", (req, res) => {
 });
 
 //ROUTES
-app.use("/api/v1/configure/ec2", EC2CONFIGURATIONROUTER);
+app.use("/api/v1/configure/ec2Configure", EC2CONFIGURATIONROUTER);
 app.use("/api/v1/configure/mern", MERNCONFIGURATIONROUTER);
-app.use("/api/v1/configure/eks",CLUSTERNAMEROUTER);
-app.use("/api/v1/configure/quickDeploy",QUICKDEPLOYROUTER);
+app.use("/api/v1/configure/eks", CLUSTERNAMEROUTER);
+app.use("/api/v1/configure/quickDeploy", QUICKDEPLOYROUTER);
+
+app.use("/api/v1/configure/rds", RDSSCRIPTROUTER);
+app.use("/api/v1/configure/ec2", EC2SCRIPTROUTER);
 
 //LISTEN
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

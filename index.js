@@ -7,7 +7,7 @@ dotenv.config();
 
 // ROUTERS
 import { EC2CONFIGURATIONROUTER } from "./routers/ec2ConfigurationRouter.js";
-import { MERNCONFIGURATIONROUTER} from "./routers/mernConfigurationRouter.js";
+import { MERNCONFIGURATIONROUTER } from "./routers/mernConfigurationRouter.js";
 import { CLUSTERNAMEROUTER } from "./routers/clusterNameRouter.js";
 import { QUICKDEPLOYROUTER } from "./routers/quickDeployRouter.js";
 
@@ -36,11 +36,11 @@ app.use("/api/v1/test", (req, res) => {
 //ROUTES
 app.use("/api/v1/configure/ec2", EC2CONFIGURATIONROUTER);
 app.use("/api/v1/configure/mern", MERNCONFIGURATIONROUTER);
-app.use("/api/v1/configure/eks",CLUSTERNAMEROUTER);
-app.use("/api/v1/configure/quickDeploy",QUICKDEPLOYROUTER);
+app.use("/api/v1/configure/eks", CLUSTERNAMEROUTER);
+app.use("/api/v1/configure/quickDeploy", QUICKDEPLOYROUTER);
+app.use("/api/v1/configure/rds", QUICKDEPLOYROUTER);
 
 //LISTEN
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

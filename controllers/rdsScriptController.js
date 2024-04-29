@@ -14,17 +14,27 @@ const fields = {
 import { CREATERDSDATABASE } from "./database/rdsScriptDatabase.js";
 
 // CONTROLLERS
-const CREATERDS = async (req, res) => {
+const createRDS = async (req, res) => {
   try {
-    const { rdsName, rdsEngine, rdsUsername, rdsPassword, rdsPort } = req.body;
+    const {
+      rdsName,
+      rdsEngineName,
+      rdsEngineVersion,
+      rdsUsername,
+      rdsPassword,
+      rdsClass,
+      rdsRegion,
+      rdsAllocatedStorage,
+      rdsPort,
+    } = req.body;
 
     const scriptPath = path.resolve(
-      new URL("../scripts/rds/remote.sh", import.meta.url).pathname
+      new URL("../scripts/v2/rds/createRds.sh", import.meta.url).pathname
     );
     const scriptDir = path.dirname(scriptPath);
 
     const provision = exec(
-      `"${scriptPath}" "${rdsName}" "${rdsEngine}" "${rdsUsername}" "${rdsPassword}" "${rdsPort}"`,
+      `${scriptPath} --identifier ${rdsName} --engine ${rdsEngineName} --version ${rdsEngineVersion} --username ${rdsUsername} --password ${rdsPassword}" --class ${rdsClass} --region ${rdsRegion} --allocatedStorage ${rdsAllocatedStorage} --port ${rdsPort}`,
       // executes script in the script directory
       { cwd: scriptDir }
     );
@@ -51,11 +61,14 @@ const CREATERDS = async (req, res) => {
         try {
           const rds = await CREATERDSDATABASE({
             rdsName,
-            rdsEngine,
+            rdsEngineName,
+            rdsEngineVersion,
             rdsUsername,
             rdsPassword,
-            rdsPort,
-            endpoint,
+            rdsClass,
+            rdsRegion,
+            rdsAllocatedStorage,
+            rdsEndpoint: endpoint,
           });
 
           res.status(StatusCodes.CREATED).json({
@@ -83,3 +96,5 @@ const CREATERDS = async (req, res) => {
     });
   }
 };
+
+export { createRDS as CREATERDS };

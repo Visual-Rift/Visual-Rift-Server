@@ -1,0 +1,4 @@
+./CreateEc2.sh my-key-pair my-instance ami-03bb6d83c60fc5f7c t2.micro 30 1
+key name, instance name,ami id, instance type , capacity
+./deleteEc2.sh my-key-pair
+key name

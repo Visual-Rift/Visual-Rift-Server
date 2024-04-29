@@ -72,4 +72,4 @@ eksctl create cluster \
 
 
 # how to run script 
-#./eks.sh --name eks2 --node-type t3.medium --nodes 3 --nodes-min 2 --nodes-max 4 --region us-east-1 --nodegroup-name my-nodes --node-volume-size 8
+#./createEKS.sh --name eks2 --node-type t3.medium --nodes 3 --nodes-min 2 --nodes-max 4 --region us-east-1 --nodegroup-name my-nodes --node-volume-size 8

@@ -11,6 +11,8 @@ import { MERNCONFIGURATIONROUTER } from "./routers/mernConfigurationRouter.js";
 import { CLUSTERNAMEROUTER } from "./routers/clusterNameRouter.js";
 import { QUICKDEPLOYROUTER } from "./routers/quickDeployRouter.js";
 
+import { RDSSCRIPTROUTER } from "./routers/rdsScriptRouter.js";
+
 //constants
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -38,7 +40,8 @@ app.use("/api/v1/configure/ec2", EC2CONFIGURATIONROUTER);
 app.use("/api/v1/configure/mern", MERNCONFIGURATIONROUTER);
 app.use("/api/v1/configure/eks", CLUSTERNAMEROUTER);
 app.use("/api/v1/configure/quickDeploy", QUICKDEPLOYROUTER);
-app.use("/api/v1/configure/rds", QUICKDEPLOYROUTER);
+
+app.use("/api/v1/configure/rds", RDSSCRIPTROUTER);
 
 //LISTEN
 app.listen(PORT, () => {

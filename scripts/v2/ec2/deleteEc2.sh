@@ -1,8 +1,14 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 # Function to display usage information
 usage() {
     echo "Usage: $0 <key-name> <region>"
+=======
+# Check if required arguments are provided
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <instance-ids-json>"
+>>>>>>> 2cea74b1bfc66554af753d0abc3fbc90c6d3eded
     exit 1
 }
 
@@ -11,6 +17,7 @@ if [ $# -ne 2 ]; then
     usage
 fi
 
+<<<<<<< HEAD
 # Assign key name and region arguments
 key_name=$1
 region=$2
@@ -35,3 +42,18 @@ if [ -f "$key_name.pem" ]; then
 fi
 
 echo "Resources deleted successfully"
+=======
+# Parse JSON array of instance IDs
+instance_ids=$(echo "$1" | jq -r '.[]')
+
+# Loop through each instance ID
+for instance_id in $instance_ids; do
+    # Terminate instance
+    if [ -n "$instance_id" ]; then
+        echo "Terminating EC2 instance $instance_id..."
+        aws ec2 terminate-instances --instance-ids $instance_id > /dev/null
+    fi
+done
+
+echo "Instances terminated successfully"
+>>>>>>> 2cea74b1bfc66554af753d0abc3fbc90c6d3eded

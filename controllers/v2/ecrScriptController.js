@@ -61,7 +61,8 @@ const deleteECR = async (req, res) => {
 
     const scriptDir = path.dirname(scriptPath);
 
-    const provision = exec(`${scriptPath} --repository-name ${ecrRepoName} --region ${ecrRegion}`, {
+    const provision = exec(`${scriptPath} --repository-name ${ecrRepoName} --region ${ecrRegion}`, 
+    {
       cwd: scriptDir,
     });
 

@@ -40,4 +40,4 @@ aws rds delete-db-instance \
 
 echo "RDS instance deletion initiated. Check AWS Console for status." 
 
-# ./deleteRds.sh --identifier my-rds-instance --region us-east-1
+# ./deleteRds.sh --identifier keshav --region us-east-1

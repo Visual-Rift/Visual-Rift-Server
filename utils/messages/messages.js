@@ -104,8 +104,38 @@ const S3_MESSAGES = {
 const ECR_MESSAGES = {
   ECR_INSTANCE_CREATED: "ECR Instance Created ✅ ",
   ERROR_CREATING_ECR_INSTANCE: "Error Creating ECR Instance ❌ ",
-  
+  ECR_INSTANCE_DELETED: "ECR Instance Deleted ✅ ",
+  ERROR_DELETING_ECR_INSTANCE: "Error Deleting ECR Instance ❌ ",
 };
+
+const RDS_MESSAGES = {
+  RDS_INSTANCE_CREATED: "RDS Instance Created ✅ ",
+  ERROR_CREATING_RDS_INSTANCE: "Error Creating RDS Instance ❌ ",
+  RDS_INSTANCE_DELETED: "RDS Instance Deleted ✅ ",
+  ERROR_DELETING_RDS_INSTANCE: "Error Deleting RDS Instance ❌ ",
+};
+
+const VPC_MESSAGES = {
+  VPC_CREATED: "VPC Created ✅ ",
+  VPC_DELETED: "VPC Deleted ✅ ",
+  ERROR_CREATING_VPC: "Error Creating VPC ❌ ",
+  ERROR_DELETING_VPC: "Error Deleting VPC ❌ ",
+};
+
+const IG_MESSAGES = {
+  IG_CREATED: "Internet Gateway Created ✅ ",
+  ERROR_CREATING_IG: "Error Creating Internet Gateway ❌ ",
+  IG_DELETED: "Internet Gateway Deleted ✅ ",
+  ERROR_DELETING_IG: "Error Deleting Internet Gateway ❌ ",
+};
+
+const SUBNET_MESSAGES = {
+  SUBNET_INSTANCE_CREATED: "Subnet Instance Created ✅ ",
+  ERROR_CREATING_SUBNET_INSTANCE: "Error Creating Subnet Instance ❌ ",
+  SUBNET_INSTANCE_DELETED: "Subnet Instance Deleted ✅ ",
+  ERROR_DELETING_SUBNET_INSTANCE: "Error Deleting Subnet Instance ❌ ",
+};
+
 
 export {
   DB_MESSAGES,
@@ -117,4 +147,8 @@ export {
   MERN_MESSAGES,
   S3_MESSAGES,
   ECR_MESSAGES,
+  RDS_MESSAGES,
+  VPC_MESSAGES,
+  IG_MESSAGES,
+  SUBNET_MESSAGES,
 };

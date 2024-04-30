@@ -13,8 +13,11 @@ import { QUICKDEPLOYROUTER } from "./routers/v1/quickDeployRouter.js";
 
 import { RDSSCRIPTROUTER } from "./routers/v2/rdsScriptRouter.js";
 import { EC2SCRIPTROUTER } from "./routers/v2/ec2ScriptRouter.js";
-import { S3SCRIPTROUTER} from "./routers/v2/s3ScriptRouter.js";
-import { ECRSCRIPTROUTER} from "./routers/v2/ecrScriptRouter.js";
+import { S3SCRIPTROUTER } from "./routers/v2/s3ScriptRouter.js";
+import { ECRSCRIPTROUTER } from "./routers/v2/ecrScriptRouter.js";
+import { VPCSCRIPTROUTER} from "./routers/v2/vpcScriptRouter.js"; 
+import { SUBNETSCRIPTROUTER } from "./routers/v2/subnetScriptRouter.js";
+import { IGSCRIPTROUTER } from "./routers/v2/internetGatewayScriptRouter.js";
 
 //constants
 const PORT = process.env.PORT || 3000;
@@ -48,8 +51,9 @@ app.use("/api/v1/configure/rds", RDSSCRIPTROUTER);
 app.use("/api/v1/configure/ec2", EC2SCRIPTROUTER);
 app.use("/api/v1/configure/s3", S3SCRIPTROUTER);
 app.use("/api/v1/configure/ecr", ECRSCRIPTROUTER);
-
-
+app.use("/api/v1/configure/vpc", VPCSCRIPTROUTER);
+app.use("/api/v1/configure/subnet", SUBNETSCRIPTROUTER);
+app.use("/api/v1/configure/ig", IGSCRIPTROUTER);
 //LISTEN
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

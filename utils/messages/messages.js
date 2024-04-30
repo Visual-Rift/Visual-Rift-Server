@@ -101,6 +101,12 @@ const S3_MESSAGES = {
   ERROR_DELETING_S3_BUCKET: "Error Deleting S3 Bucket ❌ ",
 };
 
+const ECR_MESSAGES = {
+  ECR_INSTANCE_CREATED: "ECR Instance Created ✅ ",
+  ERROR_CREATING_ECR_INSTANCE: "Error Creating ECR Instance ❌ ",
+  
+};
+
 export {
   DB_MESSAGES,
   SERVER_MESSAGES,
@@ -110,4 +116,5 @@ export {
   CLUSTER_MESSAGES,
   MERN_MESSAGES,
   S3_MESSAGES,
+  ECR_MESSAGES,
 };

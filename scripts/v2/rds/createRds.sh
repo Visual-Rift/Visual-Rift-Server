@@ -1,4 +1,4 @@
-# #!/bin/bash
+#!/bin/bash
 
 # Default values
 DB_INSTANCE_IDENTIFIER=""
@@ -62,8 +62,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check required parameters
-if [[ -z "$DB_INSTANCE_IDENTIFIER" || -z "$ENGINE" || -z "$ENGINE_VERSION" || -z "$USERNAME" || -z "$PASSWORD" || -z "$ALLOCATED_STORAGE" ]]; then
-    echo "Missing required parameters. Usage: rds.sh --identifier <instance_identifier> --engine <engine> --version <version> --username <username> --password <password> --allocated-storage <storage_size> [--class <instance_class>] [--region <region>]"
+if [[ -z "$DB_INSTANCE_IDENTIFIER" || -z "$ENGINE" || -z "$ENGINE_VERSION" || -z "$USERNAME" || -z "$PASSWORD" || -z "$ALLOCATED_STORAGE" || -z "$SECURITY_GROUP_ID" || -z "$IP_ADDRESS" ]]; then
+    echo "Missing required parameters. Usage: rds.sh --identifier <instance_identifier> --engine <engine> --version <version> --username <username> --password <password> --allocated-storage <storage_size> --region <region>"
     exit 1
 fi
 
@@ -78,8 +78,16 @@ aws rds create-db-instance \
     --allocated-storage "$ALLOCATED_STORAGE" \
     --region "$REGION"
 
+# Wait for the RDS instance to be available
+echo "Waiting for RDS instance to be available..."
+aws rds wait db-instance-available --db-instance-identifier "$DB_INSTANCE_IDENTIFIER" --region "$REGION"
 
-echo "RDS instance creation initiated. Check AWS Console for status." 
+# Retrieve RDS instance details
+echo "Retrieving RDS instance details..."
+result=$(aws rds describe-db-instances --db-instance-identifier "$DB_INSTANCE_IDENTIFIER" --region "$REGION")
+endpoint=$(echo "$result" | jq -r '.DBInstances[0].Endpoint.Address')
 
+echo "RDS instance created successfully."
+echo "Endpoint: $endpoint"
 
-# ./createRds.sh --identifier my-rds-instance --engine MySQL --version 5.7 --username admin --password password123 --class db.t3.micro --region us-east-1 --allocated-storage 5
+echo "Inbound rules added successfully."

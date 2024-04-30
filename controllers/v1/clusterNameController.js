@@ -1,8 +1,10 @@
 import { StatusCodes } from "http-status-codes";
-import {CLUSTER_MESSAGES, SERVER_MESSAGES} from "../utils/messages/messages.js";
+import {
+  CLUSTER_MESSAGES,
+  SERVER_MESSAGES,
+} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
 import axios from "axios";
-
 
 //CONSTANTS
 const fields = {
@@ -16,16 +18,16 @@ import {
   CREATECLUSTERDB,
   READCLUSTERDB,
   DELETECLUSTERDB,
-} from "./database/clusterNameDatabase.js";
+} from "../database/v1/clusterNameDatabase.js";
 
 import path from "path";
 
 // CONTROLLERS
 
-
 const createClusterName = async (req, res) => {
   try {
-    const { clusterName, nodeType, minNodes, maxNodes, region, githubUrl } = req.body;
+    const { clusterName, nodeType, minNodes, maxNodes, region, githubUrl } =
+      req.body;
 
     const scriptPath = path.resolve(
       new URL("../scripts/eks-deploy/eks.sh", import.meta.url).pathname
@@ -43,11 +45,11 @@ const createClusterName = async (req, res) => {
 
       // Send each log line to the API endpoint
       try {
-        await axios.post('http://localhost:3000/api/v1/messages', {
-          message: data.toString() // Convert data to string and send as message
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
         });
       } catch (error) {
-        console.error('Error sending log message:', error);
+        console.error("Error sending log message:", error);
       }
     });
 
@@ -56,12 +58,12 @@ const createClusterName = async (req, res) => {
 
       // Send each stderr error line to the API endpoint
       try {
-        await axios.post('http://localhost:3000/api/v1/messages', {
+        await axios.post("http://localhost:3000/api/v1/messages", {
           message: data.toString(), // Convert data to string and send as message
-          isError: true // Flag to indicate that this message is an error
+          isError: true, // Flag to indicate that this message is an error
         });
       } catch (error) {
-        console.error('Error sending error message:', error);
+        console.error("Error sending error message:", error);
       }
     });
 
@@ -84,20 +86,25 @@ const createClusterName = async (req, res) => {
           res.status(StatusCodes.CREATED).send(`Cluster created successfully.`);
         } catch (error) {
           console.error("Error storing data in the database:", error);
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
+          res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
         }
       } else {
         // Script execution failed
         console.error("Error executing script");
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error executing script" });
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: "Error executing script" });
       }
     });
   } catch (error) {
     console.log(CLUSTER_MESSAGES.ERROR_CREATING_CLUSTER_NAME, { error });
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
-
 
 const deleteClusterName = async (req, res) => {
   try {
@@ -105,12 +112,22 @@ const deleteClusterName = async (req, res) => {
     const cluster = await READCLUSTERDB(query);
 
     if (cluster) {
-      const { clusterName, nodeType, minNodes, maxNodes, region,applicationPort } = cluster;
+      const {
+        clusterName,
+        nodeType,
+        minNodes,
+        maxNodes,
+        region,
+        applicationPort,
+      } = cluster;
 
       // Explicitly cast port to a number
       const portNumber = parseInt(port, 10);
 
-      const scriptPath = path.resolve(__dirname, "../scripts/eksctl/destroyEKS.sh");
+      const scriptPath = path.resolve(
+        __dirname,
+        "../scripts/eksctl/destroyEKS.sh"
+      );
       const scriptDir = path.dirname(scriptPath);
 
       const destroy = exec(
@@ -154,7 +171,9 @@ const deleteClusterName = async (req, res) => {
       });
     } else {
       // Instance not found
-      res.status(StatusCodes.NOT_FOUND).json({ message: "Cluster name not found" });
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Cluster name not found" });
     }
   } catch (error) {
     console.error("Error deleting Cluster configuration:", error);
@@ -196,5 +215,4 @@ export {
   deleteClusterName as DELETECLUSTERNAME,
   readClusterName as READCLUSTERNAME,
   updateClusterName as UPDATECLUSTERNAME,
-  
 };

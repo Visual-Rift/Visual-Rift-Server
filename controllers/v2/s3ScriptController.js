@@ -1,20 +1,14 @@
 import path from "path";
 import { exec } from "child_process";
 import { StatusCodes } from "http-status-codes";
-import {
-  SERVER_MESSAGES,
-  S3_MESSAGES,
-} from "../../utils/messages/messages.js";
+import { SERVER_MESSAGES, S3_MESSAGES } from "../../utils/messages/messages.js";
 
 // DATABASE CONTROLLERS
 import { CREATES3DATABASE } from "../database/v2/s3ScriptDatabase.js";
 
 const createS3 = async (req, res) => {
   try {
-    const {
-      s3BucketName,
-      s3Region = "us-east-1"
-    } = req.body;
+    const { s3BucketName, s3Region = "us-east-1" } = req.body;
 
     const scriptPath = path.resolve(
       new URL("../../scripts/v2/s3/createS3.sh", import.meta.url).pathname
@@ -33,8 +27,8 @@ const createS3 = async (req, res) => {
       if (code === 0) {
         // Script executed successfully, store data in the database
         const s3Data = {
-            s3BucketName,
-            s3Region
+          s3BucketName,
+          s3Region,
         };
 
         const response = await CREATES3DATABASE(s3Data);
@@ -59,12 +53,13 @@ const createS3 = async (req, res) => {
 
 const deleteS3 = async (req, res) => {
   try {
+    const { s3BucketName } = req.body;
+
     const scriptPath = path.resolve(
       new URL("../../scripts/v2/s3/deleteS3.sh", import.meta.url).pathname
     );
 
     const scriptDir = path.dirname(scriptPath);
-
 
     const provision = exec(`${scriptPath} --bucket-name ${s3BucketName}`, {
       cwd: scriptDir,

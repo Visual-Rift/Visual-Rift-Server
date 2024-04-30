@@ -13,13 +13,13 @@ const createEC2 = async (req, res) => {
   try {
     const {
       ec2Name,
-      ec2InstanceType,
+      ec2InstanceType = "t2.micro",
       ec2KeyPair,
       ec2SecurityGroup = "default",
-      ec2Region,
+      ec2Region = "us-east-1",
       ec2AmiId,
-      ec2StorageSize,
-      ec2Count,
+      ec2StorageSize = "8",
+      ec2Count = "1",
     } = req.body;
 
     const scriptPath = path.resolve(
@@ -118,7 +118,7 @@ const deleteEc2 = async (req, res) => {
       console.log(`Script execution completed with code ${code}`);
       if (code === 0) {
         res.status(StatusCodes.OK).json({
-          "message": "EC2 instances deleted successfully.",
+          message: "EC2 instances deleted successfully.",
         });
       } else {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

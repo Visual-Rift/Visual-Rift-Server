@@ -1,14 +1,46 @@
 #!/bin/bash
 
-# Check if the VPC name, CIDR block, and region are provided as arguments
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <vpc_name> <cidr_block> <region>"
+# Function to display usage information
+usage() {
+    echo "Usage: $0 --vpc-name <vpc-name> --cidr-block <cidr-block> --region <region>"
     exit 1
-fi
+}
 
-vpc_name="$1"
-cidr_block="$2"
-region="$3"
+# Default values
+vpc_name=""
+cidr_block=""
+region=""
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --vpc-name)
+            vpc_name="$2"
+            shift
+            shift
+            ;;
+        --cidr-block)
+            cidr_block="$2"
+            shift
+            shift
+            ;;
+        --region)
+            region="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Check if required arguments are provided
+if [[ -z "$vpc_name" || -z "$cidr_block" || -z "$region" ]]; then
+    usage
+fi
 
 # Check if the VPC already exists
 vpc_exists=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=$vpc_name" --region "$region" 2>&1 || true)

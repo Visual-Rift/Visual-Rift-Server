@@ -1,1 +1,1 @@
-./createRouteTable.sh keshavkaroute vpc-0b76a463177901a08 us-east-1 igw-0c4e2f09a4ad6bb18 subnet-039191f7668cac508 true
+./createRouteTable.sh  --route-table-name my_route_table --vpc-id vpc-12345678 --region us-west-1 --internet-gateway-id igw-12345678 --subnet-id subnet-12345678 --is-public true

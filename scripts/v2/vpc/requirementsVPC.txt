@@ -1,5 +1,4 @@
-./createVPC.sh kavavpc 172.31.0.0/16 us-east-1 
+./createVPC.sh --vpc-name my-vpc --cidr-block 172.31.0.0/16 --region us-east-1 
 vpc name, vpc cidr block, vpc region
-
-./deleteVPC.sh kavavpc us-east-1
+./delete_vpc.sh --vpc-name <vpc_name> --region <region>
 vpc name, vpc region

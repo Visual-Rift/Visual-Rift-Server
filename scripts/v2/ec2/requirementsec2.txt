@@ -1,4 +1,4 @@
-./CreateEc2.sh my-key-pair my-instance ami-03bb6d83c60fc5f7c t2.micro 30 1
+./createEc2.sh --key-name my-key-pair --instance-name my-instance --ami-id ami-04b70fa74e45c3917 --instance-type t2.micro --storage-size 30 --count 1  --region us-east-1
 key name, instance name,ami id, instance type , capacity
-./deleteEc2.sh my-key-pair
+./deleteEc2.sh my-key-pair us-east-1
 key name

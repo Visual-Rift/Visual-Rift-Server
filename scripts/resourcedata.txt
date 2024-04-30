@@ -1,0 +1,8 @@
+S3 bucket created: keshav
+S3 bucket created: keshav5432
+VPC created: vpc-0b76a463177901a08
+Subnet created: subnet-039191f7668cac508
+Subnet created: subnet-07aa6d93fd13b4184
+Internet Gateway created: igw-0c4e2f09a4ad6bb18
+Route table created: rtb-0376b0806db10ddd0
+Route table created: rtb-019be5549cdc240a7

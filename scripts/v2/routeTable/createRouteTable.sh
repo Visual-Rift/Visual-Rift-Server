@@ -1,17 +1,56 @@
 #!/bin/bash
 
-# Check if the route table name, VPC ID, region, Internet Gateway ID, subnet ID, and subnet type are provided as arguments
-if [ "$#" -ne 6 ]; then
-    echo "Usage: $0 <route_table_name> <vpc_id> <region> <internet_gateway_id> <subnet_id> <is_public>"
+# Function to display usage
+usage() {
+    echo "Usage: $0 --route-table-name <route_table_name> --vpc-id <vpc_id> --region <region> --internet-gateway-id <internet_gateway_id> --subnet-id <subnet_id> --is-public <is_public>"
     exit 1
-fi
+}
 
-route_table_name="$1"
-vpc_id="$2"
-region="$3"
-internet_gateway_id="$4"
-subnet_id="$5"
-is_public="$6"
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --route-table-name)
+            route_table_name="$2"
+            shift
+            shift
+            ;;
+        --vpc-id)
+            vpc_id="$2"
+            shift
+            shift
+            ;;
+        --region)
+            region="$2"
+            shift
+            shift
+            ;;
+        --internet-gateway-id)
+            internet_gateway_id="$2"
+            shift
+            shift
+            ;;
+        --subnet-id)
+            subnet_id="$2"
+            shift
+            shift
+            ;;
+        --is-public)
+            is_public="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Check if all required arguments are provided
+if [ -z "$route_table_name" ] || [ -z "$vpc_id" ] || [ -z "$region" ] || [ -z "$internet_gateway_id" ] || [ -z "$subnet_id" ] || [ -z "$is_public" ]; then
+    usage
+fi
 
 # Create the route table
 echo "Creating route table $route_table_name in region $region..."

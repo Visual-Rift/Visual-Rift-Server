@@ -94,6 +94,13 @@ const MERN_MESSAGES = {
   ERROR_TERMINATING_MERN_INSTANCE: "Error Terminating MERN Instance ❌ ",
 };
 
+const S3_MESSAGES = {
+  S3_BUCKET_CREATED: "S3 Bucket Created ✅ ",
+  S3_BUCKET_DELETED: "S3 Bucket Deleted ✅ ",
+  ERROR_CREATING_S3_BUCKET: "Error Creating S3 Bucket ❌ ",
+  ERROR_DELETING_S3_BUCKET: "Error Deleting S3 Bucket ❌ ",
+};
+
 export {
   DB_MESSAGES,
   SERVER_MESSAGES,
@@ -102,4 +109,5 @@ export {
   SCRIPT_MESSAGES,
   CLUSTER_MESSAGES,
   MERN_MESSAGES,
+  S3_MESSAGES,
 };

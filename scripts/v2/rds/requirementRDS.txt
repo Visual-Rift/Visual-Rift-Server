@@ -1,0 +1,2 @@
+./createRds.sh --identifier my-rds-instance --engine MySQL --version 5.7 --username admin --password password123 --class db.t3.micro --region us-east-1 --allocated-storage 5
+./deleteRds.sh --identifier my-rds-instance --region ap-south-1

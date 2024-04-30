@@ -1,0 +1,2 @@
+S3 bucket created: my-test-bucket
+S3 bucket created: mytestbucket5421

@@ -1,14 +1,46 @@
 #!/bin/bash
 
-# Check if the VPC ID, gateway name, and region are provided as arguments
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <vpc_id> <gateway_name> <region>"
+# Function to display usage information
+usage() {
+    echo "Usage: $0 --vpc-id <vpc-id> --gateway-name <gateway-name> --region <region>"
     exit 1
-fi
+}
 
-vpc_id="$1"
-gateway_name="$2"
-region="$3"
+# Default values
+vpc_id=""
+gateway_name=""
+region=""
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --vpc-id)
+            vpc_id="$2"
+            shift
+            shift
+            ;;
+        --gateway-name)
+            gateway_name="$2"
+            shift
+            shift
+            ;;
+        --region)
+            region="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Check if required arguments are provided
+if [[ -z "$vpc_id" || -z "$gateway_name" || -z "$region" ]]; then
+    usage
+fi
 
 # Create the internet gateway
 echo "Creating internet gateway $gateway_name in region $region..."

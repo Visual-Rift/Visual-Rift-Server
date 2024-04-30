@@ -1,0 +1,1 @@
+./createInternetGateway.sh --vpc-id vpc-123456789 --gateway-name my-internet-gateway --region us-east-1

@@ -1,3 +1,2 @@
-./createS3.sh keshav5432 us-east-1
-
-./deleteS3.sh keshav5432
+./createS3.sh --bucket-name my-test-bucket --region us-east-1
+./deleteS3.sh --bucket-name mytestbucket5421

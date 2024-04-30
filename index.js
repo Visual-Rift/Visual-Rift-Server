@@ -41,19 +41,47 @@ app.use("/api/v1/test", (req, res) => {
   res.send("Server ✅");
 });
 
+
+// This is where you will store your messages
+let messages = [];
+
+// Route for fetching messages
+app.get("/api/v1/messages", (req, res) => {
+  // If there are no messages, wait for a new one
+  if (messages.length === 0) {
+    // Long-polling: Keep the request open until there are new messages
+    const interval = setInterval(() => {
+      if (messages.length > 0) {
+        clearInterval(interval);
+        res.json({ messages });
+      }
+    }, 1000); // Check for new messages every second
+  } else {
+    res.json({ messages });
+    messages = []; // Clear messages after sending
+  }
+});
+
+// Route for adding a new message
+app.post("/api/v1/messages", (req, res) => {
+  const { message } = req.body;
+  messages.push(message);
+  res.status(201).send("Message received!");
+});
+
 //ROUTES
 app.use("/api/v1/configure/ec2Configure", EC2CONFIGURATIONROUTER);
 app.use("/api/v1/configure/mern", MERNCONFIGURATIONROUTER);
 app.use("/api/v1/configure/eks", CLUSTERNAMEROUTER);
 app.use("/api/v1/configure/quickDeploy", QUICKDEPLOYROUTER);
 
-app.use("/api/v1/configure/rds", RDSSCRIPTROUTER);
-app.use("/api/v1/configure/ec2", EC2SCRIPTROUTER);
-app.use("/api/v1/configure/s3", S3SCRIPTROUTER);
-app.use("/api/v1/configure/ecr", ECRSCRIPTROUTER);
-app.use("/api/v1/configure/vpc", VPCSCRIPTROUTER);
-app.use("/api/v1/configure/subnet", SUBNETSCRIPTROUTER);
-app.use("/api/v1/configure/ig", IGSCRIPTROUTER);
+// app.use("/api/v1/configure/rds", RDSSCRIPTROUTER);
+// app.use("/api/v1/configure/ec2", EC2SCRIPTROUTER);
+// app.use("/api/v1/configure/s3", S3SCRIPTROUTER);
+// app.use("/api/v1/configure/ecr", ECRSCRIPTROUTER);
+// app.use("/api/v1/configure/vpc", VPCSCRIPTROUTER);
+// // app.use("/api/v1/configure/subnet", SUBNETSCRIPTROUTER);
+// app.use("/api/v1/configure/ig", IGSCRIPTROUTER);
 //LISTEN
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

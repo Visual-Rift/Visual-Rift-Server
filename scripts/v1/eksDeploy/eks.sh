@@ -53,13 +53,13 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 aws ecr set-repository-policy --repository-name vr-ec2 --policy-text '{"Version": "2008-10-17", "Statement": [{"Sid": "AllowPublicAccess", "Effect": "Allow", "Principal": "*", "Action": ["ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage"], "Condition": {"StringEquals": {"aws:PrincipalOrgID": "*"}}}]}' --region us-east-1 >/dev/null 2>&1
 
 # Build the Docker image
-sudo docker build --build-arg GITHUB_REPO_URL="$REPO_URL" -t app .
+docker build --build-arg GITHUB_REPO_URL="$REPO_URL" -t app .
 
 # Tag the Docker image
-sudo docker tag app $ecr_uri:latest
+docker tag app $ecr_uri:latest
 
 # Push the Docker image to Docker Hub
-sudo docker push $ecr_uri:latest
+docker push $ecr_uri:latest
 
 # Create the EKS cluster
 eksctl create cluster \
@@ -69,7 +69,9 @@ eksctl create cluster \
   --nodes-min "$NODES_MIN" \
   --nodes-max "$NODES_MAX" \
   --region "$REGION" \
-  --nodegroup-name my-nodes
+  --nodegroup-name my-nodes \
+    --zones us-east-1a,us-east-1b
+
 
 
 eksctl get cluster --name eks2 --region us-east-1
@@ -142,5 +144,4 @@ sleep 30
 
 # Get the hostname of the LoadBalancer
 kubectl get services
-kubectl get services frontend -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-
+kubectl get services app-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'

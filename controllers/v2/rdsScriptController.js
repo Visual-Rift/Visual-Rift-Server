@@ -27,16 +27,15 @@ const createRDS = async (req, res) => {
       rdsClass,
       rdsRegion,
       rdsAllocatedStorage,
-      rdsPort,
     } = req.body;
 
     const scriptPath = path.resolve(
-      new URL("../scripts/v2/rds/createRds.sh", import.meta.url).pathname
+      new URL("../../scripts/v2/rds/createRds.sh", import.meta.url).pathname
     );
     const scriptDir = path.dirname(scriptPath);
 
     const provision = exec(
-      `${scriptPath} --identifier ${rdsName} --engine ${rdsEngineName} --version ${rdsEngineVersion} --username ${rdsUsername} --password ${rdsPassword}" --class ${rdsClass} --region ${rdsRegion} --allocatedStorage ${rdsAllocatedStorage} --port ${rdsPort}`,
+      `${scriptPath} --identifier ${rdsName} --class ${rdsClass} --engine ${rdsEngineName} --version ${rdsEngineVersion} --username ${rdsUsername} --password ${rdsPassword}  --region ${rdsRegion} --allocated-storage ${rdsAllocatedStorage}`,
       // executes script in the script directory
       { cwd: scriptDir }
     );
@@ -61,7 +60,7 @@ const createRDS = async (req, res) => {
       if (code === 0) {
         // Script executed successfully, store data in the database
         try {
-          const rds = await CREATERDSDATABASE({
+          const rdsData = await CREATERDSDATABASE({
             rdsName,
             rdsEngineName,
             rdsEngineVersion,
@@ -73,9 +72,11 @@ const createRDS = async (req, res) => {
             rdsEndpoint: endpoint,
           });
 
+          const response = await CREATERDSDATABASE(rdsData);
+
           res.status(StatusCodes.CREATED).json({
             message: SERVER_MESSAGES.SUCCESS,
-            data: rds,
+            data: response,
           });
         } catch (error) {
           console.error(error);
@@ -99,4 +100,49 @@ const createRDS = async (req, res) => {
   }
 };
 
-export { createRDS as CREATERDS };
+const deleteRDS = async (req, res) => {
+  try {
+    const { rdsName, rdsRegion } = req.body;
+
+    const scriptPath = path.resolve(
+      new URL("../scripts/v2/rds/deleteRds.sh", import.meta.url).pathname
+    );
+
+    const scriptDir = path.dirname(scriptPath);
+
+    const provision = exec(
+      `${scriptPath} --identifier ${rdsName} --region ${rdsRegion}`,
+      { cwd: scriptDir }
+    );
+
+    // Capture stdout and stderr and log them
+    provision.stdout.on("data", (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    provision.stderr.on("data", (data) => {
+      console.error(`stderr: ${data}`);
+    });
+
+    // Handle completion of the script execution
+    provision.on("close", async (code) => {
+      console.log(`Script execution completed with code ${code}`);
+      if (code === 0) {
+        res.status(StatusCodes.OK).json({
+          message: "RDS deleted successfully.",
+        });
+      } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message: RDS_MESSAGES.ERROR,
+        });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: SERVER_MESSAGES.ERROR,
+    });
+  }
+};
+
+export { createRDS as CREATERDS , deleteRDS as DELETERDS};

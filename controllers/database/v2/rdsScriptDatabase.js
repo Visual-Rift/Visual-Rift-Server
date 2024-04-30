@@ -1,20 +1,20 @@
-import { EC2SCRIPTMODEL } from "../../../models/v2/ec2ScriptModel.js";
-import { EC2_MESSAGES } from "../../../utils/messages/messages.js";
+import { RDSSCRIPTMODEL } from "../../../models/v2/rdsScriptModel.js";
+import { RDS_MESSAGES } from "../../../utils/messages/messages.js";
 
 const createRDSDB = async (data) => {
   try {
-    const result = await EC2SCRIPTMODEL(data).save();
+    const result = await RDSSCRIPTMODEL(data).save();
     if (result !== null) {
-      console.log(EC2_MESSAGES.EC2_INSTANCE_CREATED, {
+      console.log(RDS_MESSAGES.RDS_INSTANCE_CREATED, {
         instanceId: result._id,
       });
       return result;
     } else {
-      console.log(EC2_MESSAGES.ERROR_CREATING_EC2_INSTANCE, (data, error));
+      console.log(RDS_MESSAGES.ERROR_CREATING_RDS_INSTANCE, (data, error));
       return false;
     }
   } catch (error) {
-    console.log(EC2_MESSAGES.ERROR_CREATING_EC2_INSTANCE, (data, error));
+    console.log(RDS_MESSAGES.ERROR_CREATING_RDS_INSTANCE, (data, error));
     return false;
   }
 };

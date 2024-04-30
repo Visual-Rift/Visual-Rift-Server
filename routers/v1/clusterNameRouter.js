@@ -5,7 +5,7 @@ import {
   CREATECLUSTERNAME,
   UPDATECLUSTERNAME,
   DELETECLUSTERNAME,
-} from "../../controllers/v2/clusterNameController.js";
+} from "../../controllers/v1/clusterNameController.js";
 
 const clusterNameRouter = express.Router();
 

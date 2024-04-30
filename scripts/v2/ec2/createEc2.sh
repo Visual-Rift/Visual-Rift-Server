@@ -80,8 +80,11 @@ aws ec2 create-key-pair --key-name "$key_name" --query 'KeyMaterial' --output te
 chmod 400 "$key_name.pem"
 echo "Key pair $key_name created successfully!"
 
-# Create EC2 instances
-echo "Creating $count EC2 instance(s)..."
-aws ec2 run-instances --image-id "$ami_id" --count "$count" --instance-type "$instance_type" --key-name "$key_name" --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance_name}]" --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"VolumeSize\":$storage_size}}]" --region "$region"
+# Run the AWS CLI command to create EC2 instances and capture the output
+instance_output=$(aws ec2 run-instances --image-id "$ami_id" --count "$count" --instance-type "$instance_type" --key-name "$key_name" --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance_name}]" --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"VolumeSize\":$storage_size}}]" --region "$region")
 
-echo "EC2 instance(s) $instance_name created with key pair $key_name"
+# Extract the instance IDs from the output using jq (JSON processor)
+instance_ids=$(echo "$instance_output" | jq -r '.Instances[].InstanceId')
+
+# Print the IDs of the created instances
+echo "$instance_ids"

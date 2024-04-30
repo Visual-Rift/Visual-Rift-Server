@@ -26,6 +26,14 @@ const ec2ScriptSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    ec2StorageSize: {
+      type: Number,
+      required: true,
+    },
+    ec2InstanceIds: {
+      type: [String],
+      required: true,
+    },
   },
   {
     timestamps: true,

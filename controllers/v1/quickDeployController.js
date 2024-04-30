@@ -1,5 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import { SERVER_MESSAGES, EC2_MESSAGES } from "../utils/messages/messages.js";
+import {
+  SERVER_MESSAGES,
+  EC2_MESSAGES,
+} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
 
 // CONSTANTS

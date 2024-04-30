@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import {
+  CLUSTER_MESSAGES,
   SERVER_MESSAGES,
-  EC2_MESSAGES,
-} from "../utils/messages/messages.js";
+} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
 
 //CONSTANTS
@@ -14,25 +14,33 @@ const fields = {
 
 // DATABASE CONTROLLERS
 import {
-  CREATEEC2DB,
-  READEC2DB,
-  DELETEEC2DB,
-} from "./database/ec2ConfigurationDatabase.js";
+  CREATECLUSTERDB,
+  READCLUSTERDB,
+  DELETECLUSTERDB,
+} from "../database/v1/clusterNameDatabase.js";
 
 import path from "path";
 
 // CONTROLLERS
-const createEC2Configuration = async (req, res) => {
+const createClusterName = async (req, res) => {
   try {
-    const { githubUrl, instanceType, ami, port, ec2Name } = req.body;
+    const {
+      clusterName,
+      nodeType,
+      minNodes,
+      maxNodes,
+      region,
+      applicationPort,
+      githubUrl,
+    } = req.body;
 
     const scriptPath = path.resolve(
-      new URL("../scripts/ec2/remote.sh", import.meta.url).pathname
+      new URL("../scripts/eks/eks.sh", import.meta.url).pathname
     );
     const scriptDir = path.dirname(scriptPath);
-      
+
     const provision = exec(
-      `"${scriptPath}" "${port}" "${githubUrl}" "${instanceType}" "${ami}" "${ec2Name}"`,
+      `sudo "${scriptPath}" "${githubUrl}" "${minNodes}" "${maxNodes}" "${nodeType}" "${clusterName}"`,
       // executes script in the script directory
       { cwd: scriptDir }
     );
@@ -57,21 +65,19 @@ const createEC2Configuration = async (req, res) => {
       if (code === 0) {
         // Script executed successfully, store data in the database
         try {
-          const instance = await CREATEEC2DB({
+          const cluster = await CREATECLUSTERDB({
+            clusterName,
+            nodeType,
+            minNodes,
+            maxNodes,
+            region,
             githubUrl,
-            instanceType,
-            ami,
-            port,
-            ec2Name,
-            public_ip: publicIp,
           });
-          console.log(EC2_MESSAGES.EC2_INSTANCE_CREATED, { instance });
-
-          const instanceUrl = `${publicIp}:${port}`;
+          console.log(CLUSTER_MESSAGES.CLUSTER_NAME_CREATED, { cluster });
 
           res
             .status(StatusCodes.CREATED)
-            .send(`Instance created successfully. URL : ${instanceUrl}`);
+            .send(`Cluster created successfully. URL : ${clusterUrl}`);
         } catch (error) {
           console.error("Error storing data in the database:", error);
           res
@@ -87,30 +93,39 @@ const createEC2Configuration = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log(EC2_MESSAGES.ERROR_CREATING_EC2_INSTANCE, { error });
+    console.log(CLUSTER_MESSAGES.ERROR_CREATING_CLUSTER_NAME, { error });
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
-const deleteEC2Configuration = async (req, res) => {
+const deleteClusterName = async (req, res) => {
   try {
     const query = { _id: req.query.id };
-    // check if instance already exists
-    const instance = await READEC2DB(query);
+    const cluster = await READCLUSTERDB(query);
 
-    if (instance) {
-      const { ec2Name, instanceType, ami, port } = instance;
+    if (cluster) {
+      const {
+        clusterName,
+        nodeType,
+        minNodes,
+        maxNodes,
+        region,
+        applicationPort,
+      } = cluster;
 
       // Explicitly cast port to a number
       const portNumber = parseInt(port, 10);
 
-      const scriptPath = path.resolve(__dirname, "../scripts/ec2/revert.sh");
+      const scriptPath = path.resolve(
+        __dirname,
+        "../scripts/eksctl/destroyEKS.sh"
+      );
       const scriptDir = path.dirname(scriptPath);
 
       const destroy = exec(
-        `"${scriptPath}" "${portNumber}" "${instanceType}" "${ami}" "${ec2Name}"`,
+        `"${scriptPath}" "${clusterName}" "${nodeType}" "${minNodes}" "${maxNodes}" "${region}" "${applicationPort}"`,
         { cwd: scriptDir } // executes script in the script directory
       );
 
@@ -129,13 +144,13 @@ const deleteEC2Configuration = async (req, res) => {
         if (code === 0) {
           // Script executed successfully, delete data from the database
           try {
-            const deletedInstance = await DELETEEC2DB(query);
-            console.log(EC2_MESSAGES.EC2_INSTANCE_TERMINATED, {
-              deletedInstance,
+            const deletedCluster = await DELETECLUSTERDB(query);
+            console.log(CLUSTER_MESSAGES.CLUSTER_TERMINATED, {
+              deletedCluster,
             });
-            res.status(StatusCodes.OK).send("Resources destroyed successfully");
+            res.status(StatusCodes.OK).send("Terminated successfully");
           } catch (error) {
-            console.error(EC2_MESSAGES.ERROR_TERMINATING_EC2_INSTANCE, error);
+            console.error(CLUSTER_MESSAGES.ERROR_TERMINATING_CLUSTER, error);
             res
               .status(StatusCodes.INTERNAL_SERVER_ERROR)
               .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
@@ -150,46 +165,48 @@ const deleteEC2Configuration = async (req, res) => {
       });
     } else {
       // Instance not found
-      res.status(StatusCodes.NOT_FOUND).json({ message: "Instance not found" });
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Cluster name not found" });
     }
   } catch (error) {
-    console.error("Error deleting EC2 configuration:", error);
+    console.error("Error deleting Cluster configuration:", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
+      .send(CLUSTER_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
-const readEC2Configuration = async (req, res) => {
+const readClusterName = async (req, res) => {
   try {
     const query = !req.query.id ? {} : { _id: req.query.id };
-    const instance = await READEC2DB(query, fields);
+    const instance = await READCLUSTERDB(query, fields);
 
     if (instance.length > 0) {
-      console.log(EC2_MESSAGES.EC2_INSTANCE_FOUND, { instance });
+      console.log(CLUSTER_MESSAGES.CLUSTER_NAME_FOUND, { instance });
 
       return res.status(StatusCodes.OK).send(instance);
     } else {
-      console.log(EC2_MESSAGES.EC2_INSTANCE_NOT_FOUND);
+      console.log(CLUSTER_MESSAGES.CLUSTER_NAME_NOT_FOUND);
       return res
         .status(StatusCodes.NOT_FOUND)
-        .send(EC2_MESSAGES.EC2_INSTANCE_NOT_FOUND);
+        .send(CLUSTER_MESSAGES.CLUSTER_NAME_NOT_FOUND);
     }
   } catch (error) {
-    console.log(EC2_MESSAGES.ERROR_READING_EC2_INSTANCE, { error });
+    console.log(CLUSTER_MESSAGES.ERROR_READING_CLUSTER_NAME, { error });
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
 
-const updateEC2Configuration = async (req, res) => {
-  res.send("updateEC2Configuration");
+const updateClusterName = async (_req, res) => {
+  res.send("updateClusterName");
 };
 
 export {
-  createEC2Configuration as CREATEEC2CONFIGURATION,
-  readEC2Configuration as READEC2CONFIGURATION,
-  updateEC2Configuration as UPDATEEC2CONFIGURATION,
-  deleteEC2Configuration as DELETEEC2CONFIGURATION,
+  createClusterName as CREATECLUSTERNAME,
+  deleteClusterName as DELETECLUSTERNAME,
+  readClusterName as READCLUSTERNAME,
+  updateClusterName as UPDATECLUSTERNAME,
 };

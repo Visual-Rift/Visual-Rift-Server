@@ -1,7 +1,10 @@
 import path from "path";
 import { exec } from "child_process";
 import { StatusCodes } from "http-status-codes";
-import { SERVER_MESSAGES, EC2_MESSAGES } from "../utils/messages/messages.js";
+import {
+  SERVER_MESSAGES,
+  EC2_MESSAGES,
+} from "../../utils/messages/messages.js";
 
 // CONSTANTS
 const fields = {
@@ -13,8 +16,8 @@ const fields = {
 // DATABASE CONTROLLERS
 import {
   CREATEEC2DATABASE,
-  DELETEEC2DATABASE,
-} from "./database/ec2ScriptDatabase.js";
+  //   DELETEEC2DATABASE,
+} from "../database/v2/ec2ScriptDatabase.js";
 
 // CONTROLLERS
 const createEC2 = async (req, res) => {
@@ -23,18 +26,23 @@ const createEC2 = async (req, res) => {
       ec2Name,
       ec2InstanceType,
       ec2KeyPair,
-      ec2SecurityGroup,
+      ec2SecurityGroup = "default",
       ec2Region,
       ec2AmiId,
+      ec2StorageSize,
+      ec2Count,
     } = req.body;
 
     const scriptPath = path.resolve(
-      new URL("../scripts/v2/ec2/createEc2.sh", import.meta.url).pathname
+      new URL("../../scripts/v2/ec2/createEc2.sh", import.meta.url).pathname
     );
+
+    console.log(scriptPath);
+
     const scriptDir = path.dirname(scriptPath);
 
     const provision = exec(
-      `${scriptPath} --name ${ec2Name} --instanceType ${ec2InstanceType} --keyPair ${ec2KeyPair} --securityGroup ${ec2SecurityGroup} --region ${ec2Region} --amiId ${ec2AmiId}`,
+      `${scriptPath} --instance-name ${ec2Name} --instance-type ${ec2InstanceType} --key-name ${ec2KeyPair} --region ${ec2Region} --ami-id ${ec2AmiId} --storage-size ${ec2StorageSize} --count ${ec2Count}`,
       // executes script in the script directory
       { cwd: scriptDir }
     );

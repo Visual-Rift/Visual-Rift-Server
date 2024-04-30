@@ -1,6 +1,8 @@
 import path from "path";
 import { StatusCodes } from "http-status-codes";
-import { SERVER_MESSAGES, RDS_MESSAGES } from "../utils/messages/messages.js";
+import {
+  SERVER_MESSAGES,
+} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
 
 //CONSTANTS
@@ -11,7 +13,7 @@ const fields = {
 };
 
 // DATABASE CONTROLLERS
-import { CREATERDSDATABASE } from "./database/rdsScriptDatabase.js";
+import { CREATERDSDATABASE } from "../database/v2/rdsScriptDatabase.js";
 
 // CONTROLLERS
 const createRDS = async (req, res) => {

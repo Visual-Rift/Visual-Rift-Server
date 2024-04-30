@@ -1,6 +1,6 @@
 import express from "express";
 
-import { CREATERDS } from "../controllers/rdsScriptController.js";
+import { CREATERDS } from "../../controllers/v2/rdsScriptController.js";
 
 const rdsScriptRouter = express.Router();
 

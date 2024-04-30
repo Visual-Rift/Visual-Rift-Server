@@ -1,11 +1,13 @@
-import { CLUSTERNAMEMODEL } from "../../models/clusterNameModel.js";
-import { CLUSTER_MESSAGES } from "../../utils/messages/messages.js";
+import { CLUSTERNAMEMODEL } from "../../../models/v1/clusterNameModel.js";
+import { CLUSTER_MESSAGES } from "../../../utils/messages/messages.js";
 // DATABASE OPERATIONS
 const createCLUSTERDB = async (data) => {
   try {
     const result = await CLUSTERNAMEMODEL(data).save();
     if (result !== null) {
-      console.log(CLUSTER_MESSAGES.CLUSTER_NAME_CREATED, {clusterId: result._id,});
+      console.log(CLUSTER_MESSAGES.CLUSTER_NAME_CREATED, {
+        clusterId: result._id,
+      });
       return result;
     } else {
       console.log(CLUSTERNAMEMODEL.ERROR_CREATING_CLUSTER_NAME, (data, error));
@@ -72,7 +74,10 @@ const deleteCLUSTERDB = async (query) => {
       return false;
     }
   } catch (error) {
-    console.log(CLUSTERNAMEMODEL.ERROR_TERMINATING_CLUSTER_NAME, (query, error));
+    console.log(
+      CLUSTERNAMEMODEL.ERROR_TERMINATING_CLUSTER_NAME,
+      (query, error)
+    );
     return false;
   }
 };

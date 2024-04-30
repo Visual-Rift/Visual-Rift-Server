@@ -5,7 +5,7 @@ import {
   CREATEEC2CONFIGURATION,
   UPDATEEC2CONFIGURATION,
   DELETEEC2CONFIGURATION,
-} from "../controllers/ec2ConfigurationController.js";
+} from "../../controllers/v1/ec2ConfigurationController.js";
 
 const ec2ConfigurationRouter = express.Router();
 

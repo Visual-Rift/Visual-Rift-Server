@@ -1,5 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import { SERVER_MESSAGES, MERN_MESSAGES } from "../utils/messages/messages.js";
+import {
+  SERVER_MESSAGES,
+  MERN_MESSAGES,
+} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
 
 //COSTANTS
@@ -15,7 +18,7 @@ import {
   CREATEMERNDB,
   READMERNDB,
   DELETEMERNDB,
-} from "./database/mernConfigurationDatabase.js";
+} from "../database/v1/mernConfigurationDatabase.js";
 
 import path from "path";
 
@@ -39,7 +42,7 @@ const createMernConfiguration = async (req, res) => {
       new URL("../scripts/ec2/remote.sh", import.meta.url).pathname
     );
     const frontendScriptDir = path.dirname(frontendScriptPath);
-    
+
     const provision = exec(
       `"${frontendScriptPath}" "${frontendPort}" "${frontendGithubUrl}" "${frontendInstanceType}" "${frontendAmi}" "${frontendec2Name}" "${backendPort}" "${backendGithubUrl}" "${backendInstanceType}" "${backendAmi}" "${backendec2Name}"`,
       // executes script in the script directory
@@ -82,13 +85,13 @@ const createMernConfiguration = async (req, res) => {
 
           const frontendInstanceUrl = `${publicIp}:${frontendPort}`;
           const backendInstanceUrl = `${publicIp}:${backendPort}`;
-          
+
           if (mern) {
-          res.status(StatusCodes.CREATED).json({
-            message: SERVER_MESSAGES.INSTANCE_CREATED,
-            frontendInstanceId: mern._id,
-            backendInstanceId: mern._id,
-          });  
+            res.status(StatusCodes.CREATED).json({
+              message: SERVER_MESSAGES.INSTANCE_CREATED,
+              frontendInstanceId: mern._id,
+              backendInstanceId: mern._id,
+            });
           }
         } catch (error) {
           console.error("Error storing data in the database:", error);
@@ -109,20 +112,32 @@ const createMernConfiguration = async (req, res) => {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
-  } 
+  }
 };
 
 const deleteMernConfiguration = async (req, res) => {
-  try{
+  try {
     const query = { _id: req.query.id };
     const mern = await READMERNDB(query);
 
     if (mern) {
-      const { frontendec2Name, backendec2Name, frontendPort, backendPort, frontendAmi, backendAmi, frontendInstanceType, backendInstanceType } = mern;
+      const {
+        frontendec2Name,
+        backendec2Name,
+        frontendPort,
+        backendPort,
+        frontendAmi,
+        backendAmi,
+        frontendInstanceType,
+        backendInstanceType,
+      } = mern;
 
       const portNumber = parseInt(frontendPort, 10);
 
-      const frontendScriptPath = path.resolve(__dirname, "../scripts/mern/deleteEC2.sh");
+      const frontendScriptPath = path.resolve(
+        __dirname,
+        "../scripts/mern/deleteEC2.sh"
+      );
       const frontendScriptDir = path.dirname(frontendScriptPath);
 
       const destroy = exec(
@@ -162,7 +177,8 @@ const deleteMernConfiguration = async (req, res) => {
       });
     } else {
       res.status(StatusCodes.NOT_FOUND).json({
-        message: SERVER_MESSAGES.INSTANCE_NOT_FOUND,});
+        message: SERVER_MESSAGES.INSTANCE_NOT_FOUND,
+      });
     }
   } catch (error) {
     console.error(MERN_MESSAGES.ERROR_CREATING_MERN_INSTANCE, error);
@@ -179,9 +195,13 @@ const readMernConfiguration = async (req, res) => {
     const mern = await READMERNDB(query, fields);
 
     if (mern) {
-      res.status(StatusCodes.OK).json({ message: SERVER_MESSAGES.INSTANCE_FOUND, mern });
+      res
+        .status(StatusCodes.OK)
+        .json({ message: SERVER_MESSAGES.INSTANCE_FOUND, mern });
     } else {
-      res.status(StatusCodes.NOT_FOUND).json({ message: SERVER_MESSAGES.INSTANCE_NOT_FOUND });
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: SERVER_MESSAGES.INSTANCE_NOT_FOUND });
     }
   } catch (error) {
     console.error(MERN_MESSAGES.ERROR_READING_MERN_INSTANCE, error);
@@ -193,7 +213,6 @@ const readMernConfiguration = async (req, res) => {
 
 const updateMernConfiguration = async (req, res) => {
   res.status(StatusCodes.NOT_IMPLEMENTED).send(SERVER_MESSAGES.NOT_IMPLEMENTED);
-  
 };
 
 export {
@@ -202,5 +221,3 @@ export {
   readMernConfiguration as READMERNCONFIGURATION,
   updateMernConfiguration as UPDATEMERNCONFIGURATION,
 };
-
-

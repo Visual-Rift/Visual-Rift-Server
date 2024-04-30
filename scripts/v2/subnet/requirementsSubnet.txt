@@ -1,0 +1,2 @@
+./create_subnet.sh --vpc-id vpc-079ec2d73edee2420 --subnet-name kavasubnet2 --cidr-block 172.31.2.0/24 --region us-east-1
+vpc-id, subnet-name, vpc cidr block, vpc region

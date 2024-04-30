@@ -1,13 +1,35 @@
 #!/bin/bash
 
-# Check if the VPC name and region are provided as arguments
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <vpc_name> <region>"
+# Default values
+vpc_name=""
+region=""
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --vpc-name)
+            vpc_name="$2"
+            shift
+            shift
+            ;;
+        --region)
+            region="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Check if the VPC name and region are provided
+if [[ -z "$vpc_name" || -z "$region" ]]; then
+    echo "Usage: $0 --vpc-name <vpc_name> --region <region>"
     exit 1
 fi
-
-vpc_name="$1"
-region="$2"
 
 # Get the VPC ID by name
 vpc_id=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=$vpc_name" --region "$region" --output text --query 'Vpcs[*].VpcId')

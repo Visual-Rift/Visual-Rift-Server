@@ -1,1 +1,0 @@
-./createInternetGateway.sh vpc-0b76a463177901a08 keshavkagate us-east-1

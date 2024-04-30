@@ -1,4 +1,4 @@
-#!/bin/bash
+# #!/bin/bash
 
 # Default values
 DB_INSTANCE_IDENTIFIER=""

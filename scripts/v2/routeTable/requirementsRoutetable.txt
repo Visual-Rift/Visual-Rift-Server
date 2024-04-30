@@ -1,0 +1,1 @@
+./createRouteTable.sh  --route-table-name my_route_table --vpc-id vpc-12345678 --region us-west-1 --internet-gateway-id igw-12345678 --subnet-id subnet-12345678 --is-public true

@@ -2,8 +2,9 @@ import { StatusCodes } from "http-status-codes";
 import {
   SERVER_MESSAGES,
   EC2_MESSAGES,
-} from "../../utils/messages/messages.js";
+} from "../utils/messages/messages.js";
 import { exec } from "child_process";
+import axios from "axios";
 
 //CONSTANTS
 const fields = {
@@ -17,20 +18,19 @@ import {
   CREATEEC2DB,
   READEC2DB,
   DELETEEC2DB,
-} from "../database/v1/ec2ConfigurationDatabase.js";
+} from "./database/ec2ConfigurationDatabase.js";
 
 import path from "path";
 
-// CONTROLLERS
 const createEC2Configuration = async (req, res) => {
   try {
     const { githubUrl, instanceType, ami, port, ec2Name } = req.body;
 
     const scriptPath = path.resolve(
-      new URL("../scripts/ec2/remote.sh", import.meta.url).pathname
+      new URL("../scripts/ec2-deploy/remote.sh", import.meta.url).pathname
     );
     const scriptDir = path.dirname(scriptPath);
-
+      
     const provision = exec(
       `"${scriptPath}" "${port}" "${githubUrl}" "${instanceType}" "${ami}" "${ec2Name}"`,
       // executes script in the script directory
@@ -40,15 +40,34 @@ const createEC2Configuration = async (req, res) => {
     let publicIp = null;
 
     // Capture stdout and stderr and log them
-    provision.stdout.on("data", (data) => {
+    provision.stdout.on("data", async (data) => {
       console.log(`stdout: ${data}`);
 
       // Assuming the last line of output is the public IP
       publicIp = data.trim();
+
+      // Send each log line to the API endpoint
+      try {
+        await axios.post('http://localhost:3000/api/v1/messages', {
+          message: data.toString() // Convert data to string and send as message
+        });
+      } catch (error) {
+        console.error('Error sending log message:', error);
+      }
     });
 
-    provision.stderr.on("data", (data) => {
+    provision.stderr.on("data", async (data) => {
       console.error(`stderr: ${data}`);
+
+      // Send each stderr error line to the API endpoint
+      try {
+        await axios.post('http://localhost:3000/api/v1/messages', {
+          message: data.toString(), // Convert data to string and send as message
+          isError: true // Flag to indicate that this message is an error
+        });
+      } catch (error) {
+        console.error('Error sending error message:', error);
+      }
     });
 
     // Handle completion of the script execution
@@ -93,6 +112,7 @@ const createEC2Configuration = async (req, res) => {
       .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
+
 
 const deleteEC2Configuration = async (req, res) => {
   try {

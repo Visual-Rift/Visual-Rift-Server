@@ -1,6 +1,6 @@
 import express from "express";
 
-import { quickDeploy } from "../controllers/quickDeployController.js";
+import { quickDeploy } from "../../controllers/v1/quickDeployController.js";
 
 const quickDeployRouter = express.Router();
 

@@ -5,7 +5,7 @@ import {
   CREATEMERNCONFIGURATION,
   UPDATEMERNCONFIGURATION,
   DELETEMERNCONFIGURATION,
-} from "../controllers/mernConfigurationController.js";
+} from "../../controllers/v1/mernConfigurationController.js";
 
 const mernConfigurationRouter = express.Router();
 

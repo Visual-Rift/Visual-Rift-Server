@@ -1,5 +1,5 @@
-import { EC2CONFIGURATIONMODEL } from "../../models/ec2ConfigurationModel.js";
-import { EC2_MESSAGES } from "../../utils/messages/messages.js";
+import { EC2CONFIGURATIONMODEL } from "../../../models/v1/ec2ConfigurationModel.js";
+import { EC2_MESSAGES } from "../../../utils/messages/messages.js";
 // DATABASE OPERATIONS
 const createEC2DB = async (data) => {
   try {

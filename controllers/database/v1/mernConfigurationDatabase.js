@@ -1,5 +1,5 @@
-import { MERNCONFIGURATIONMODEL } from "../../models/mernConfigurationModel.js";
-import { MERN_MESSAGES } from "../../utils/messages/messages.js";
+import { MERNCONFIGURATIONMODEL } from "../../../models/v1/mernConfigurationModel.js";
+import { MERN_MESSAGES } from "../../../utils/messages/messages.js";
 
 // DATABASE OPERATIONS
 const createMERNDB = async (data) => {
@@ -85,5 +85,4 @@ export {
   readMERNDB as READMERNDB,
   updateMERNDB as updateMERNDB,
   deleteMERNDB as DELETEMERNDB,
-  
 };

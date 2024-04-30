@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import {
   SERVER_MESSAGES,
-  EC2_MESSAGES,
-} from "../utils/messages/messages.js";
+  // EC2_MESSAGES,
+} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
 import axios from "axios";
 
@@ -18,7 +18,7 @@ import {
   CREATEEC2DB,
   READEC2DB,
   DELETEEC2DB,
-} from "./database/ec2ConfigurationDatabase.js";
+} from "../database/v1/ec2ConfigurationDatabase.js";
 
 import path from "path";
 
@@ -30,7 +30,7 @@ const createEC2Configuration = async (req, res) => {
       new URL("../scripts/ec2-deploy/remote.sh", import.meta.url).pathname
     );
     const scriptDir = path.dirname(scriptPath);
-      
+
     const provision = exec(
       `"${scriptPath}" "${port}" "${githubUrl}" "${instanceType}" "${ami}" "${ec2Name}"`,
       // executes script in the script directory
@@ -48,11 +48,11 @@ const createEC2Configuration = async (req, res) => {
 
       // Send each log line to the API endpoint
       try {
-        await axios.post('http://localhost:3000/api/v1/messages', {
-          message: data.toString() // Convert data to string and send as message
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
         });
       } catch (error) {
-        console.error('Error sending log message:', error);
+        console.error("Error sending log message:", error);
       }
     });
 
@@ -61,12 +61,12 @@ const createEC2Configuration = async (req, res) => {
 
       // Send each stderr error line to the API endpoint
       try {
-        await axios.post('http://localhost:3000/api/v1/messages', {
+        await axios.post("http://localhost:3000/api/v1/messages", {
           message: data.toString(), // Convert data to string and send as message
-          isError: true // Flag to indicate that this message is an error
+          isError: true, // Flag to indicate that this message is an error
         });
       } catch (error) {
-        console.error('Error sending error message:', error);
+        console.error("Error sending error message:", error);
       }
     });
 
@@ -84,7 +84,7 @@ const createEC2Configuration = async (req, res) => {
             ec2Name,
             public_ip: publicIp,
           });
-          console.log(EC2_MESSAGES.EC2_INSTANCE_CREATED, { instance });
+          console.log("EC2 Instance Created", { instance });
 
           const instanceUrl = `${publicIp}:${port}`;
 
@@ -112,7 +112,6 @@ const createEC2Configuration = async (req, res) => {
       .send(SERVER_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
-
 
 const deleteEC2Configuration = async (req, res) => {
   try {

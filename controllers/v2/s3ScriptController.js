@@ -2,6 +2,7 @@ import path from "path";
 import { exec } from "child_process";
 import { StatusCodes } from "http-status-codes";
 import { SERVER_MESSAGES, S3_MESSAGES } from "../../utils/messages/messages.js";
+import axios from "axios"; // Import axios for making HTTP requests
 
 // DATABASE CONTROLLERS
 import { CREATES3DATABASE } from "../database/v2/s3ScriptDatabase.js";
@@ -20,6 +21,34 @@ const createS3 = async (req, res) => {
       `${scriptPath} --bucket-name ${s3BucketName} --region ${s3Region}`,
       { cwd: scriptDir }
     );
+
+    // Capture stdout and stderr and log them
+    provision.stdout.on("data", async (data) => {
+      console.log(`stdout: ${data}`);
+
+      // Send each log line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
+        });
+      } catch (error) {
+        console.error("Error sending log message:", error);
+      }
+    });
+
+    provision.stderr.on("data", async (data) => {
+      console.error(`stderr: ${data}`);
+
+      // Send each stderr error line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
+          isError: true, // Flag to indicate that this message is an error
+        });
+      } catch (error) {
+        console.error("Error sending error message:", error);
+      }
+    });
 
     // Handle completion of the script execution
     provision.on("close", async (code) => {

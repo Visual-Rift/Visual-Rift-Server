@@ -1,14 +1,12 @@
 import path from "path";
 import { exec } from "child_process";
 import { StatusCodes } from "http-status-codes";
-import {
-  SERVER_MESSAGES,
-  VPC_MESSAGES,
-} from "../../utils/messages/messages.js";
+import { SERVER_MESSAGES, VPC_MESSAGES } from "../../utils/messages/messages.js";
+import axios from "axios"; // Import axios for making HTTP requests
 
 // DATABASE CONTROLLERS
 import { CREATEVPCDATABASE } from "../database/v2/vpcScriptDatabase.js";
-import {VPCSCRIPTMODEL} from "../../models/v2/vpcScriptModel.js";
+import { VPCSCRIPTMODEL } from "../../models/v2/vpcScriptModel.js";
 
 const createVPC = async (req, res) => {
   try {
@@ -47,11 +45,30 @@ const createVPC = async (req, res) => {
           vpcId
         };
         await CREATEVPCDATABASE(vpcData);
+
+        // Send each log line to the API endpoint
+        try {
+          await axios.post("http://localhost:3000/api/v1/messages", {
+            message: data.toString(), // Convert data to string and send as message
+          });
+        } catch (error) {
+          console.error("Error sending log message:", error);
+        }
       }
     });
 
-    provision.stderr.on("data", (data) => {
+    provision.stderr.on("data", async (data) => {
       console.error(`stderr: ${data}`);
+
+      // Send each stderr error line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
+          isError: true, // Flag to indicate that this message is an error
+        });
+      } catch (error) {
+        console.error("Error sending error message:", error);
+      }
     });
 
     // Handle completion of the script execution
@@ -78,4 +95,4 @@ const createVPC = async (req, res) => {
   }
 };
 
-export { createVPC as CREATEVPC};
+export { createVPC as CREATEVPC };

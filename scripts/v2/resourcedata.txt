@@ -4,3 +4,9 @@ S3 bucket created: kava54869
 S3 bucket created: kava54869
 Internet Gateway created: igw-069108abb73d6010d
 Internet Gateway created: 
+S3 bucket created: keshav-s3-bucket
+S3 bucket created: keshav-s3-bucket
+S3 bucket created: keshav-s3-bucket
+S3 bucket created: keshav-s3-bucket
+S3 bucket created: keshav-s3-bucket
+S3 bucket created: keshav-s3-bucket

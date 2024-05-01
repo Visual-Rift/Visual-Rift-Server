@@ -1,21 +1,12 @@
 import path from "path";
-import { StatusCodes } from "http-status-codes";
-import {
-  SERVER_MESSAGES,
-} from "../../utils/messages/messages.js";
 import { exec } from "child_process";
-
-//CONSTANTS
-const fields = {
-  _v: 0,
-  createdAt: 0,
-  updatedAt: 0,
-};
+import { StatusCodes } from "http-status-codes";
+import { SERVER_MESSAGES, RDS_MESSAGES } from "../../utils/messages/messages.js";
+import axios from "axios"; // Import axios for making HTTP requests
 
 // DATABASE CONTROLLERS
 import { CREATERDSDATABASE } from "../database/v2/rdsScriptDatabase.js";
 
-// CONTROLLERS
 const createRDS = async (req, res) => {
   try {
     const {
@@ -43,15 +34,32 @@ const createRDS = async (req, res) => {
     let endpoint = null;
 
     // Capture stdout and stderr and log them
-    provision.stdout.on("data", (data) => {
+    provision.stdout.on("data", async (data) => {
       console.log(`stdout: ${data}`);
+      endpoint = data.trim(); // Assuming the last line of output is the public IP
 
-      // Assuming the last line of output is the public IP
-      endpoint = data.trim();
+      // Send each log line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
+        });
+      } catch (error) {
+        console.error("Error sending log message:", error);
+      }
     });
 
-    provision.stderr.on("data", (data) => {
+    provision.stderr.on("data", async (data) => {
       console.error(`stderr: ${data}`);
+
+      // Send each stderr error line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v1/messages", {
+          message: data.toString(), // Convert data to string and send as message
+          isError: true, // Flag to indicate that this message is an error
+        });
+      } catch (error) {
+        console.error("Error sending error message:", error);
+      }
     });
 
     // Handle completion of the script execution
@@ -60,7 +68,7 @@ const createRDS = async (req, res) => {
       if (code === 0) {
         // Script executed successfully, store data in the database
         try {
-          const rdsData = await CREATERDSDATABASE({
+          const rdsData = {
             rdsName,
             rdsEngineName,
             rdsEngineVersion,
@@ -70,8 +78,7 @@ const createRDS = async (req, res) => {
             rdsRegion,
             rdsAllocatedStorage,
             rdsEndpoint: endpoint,
-          });
-
+          };
           const response = await CREATERDSDATABASE(rdsData);
 
           res.status(StatusCodes.CREATED).json({

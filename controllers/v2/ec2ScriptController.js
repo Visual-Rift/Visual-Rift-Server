@@ -1,12 +1,11 @@
 import path from "path";
 import { exec } from "child_process";
 import { StatusCodes } from "http-status-codes";
+import axios from "axios";
 import {
   SERVER_MESSAGES,
   EC2_MESSAGES,
 } from "../../utils/messages/messages.js";
-
-// DATABASE CONTROLLERS
 import { CREATEEC2DATABASE } from "../database/v2/ec2ScriptDatabase.js";
 
 const createEC2 = async (req, res) => {
@@ -36,16 +35,34 @@ const createEC2 = async (req, res) => {
     const ec2InstanceIds = [];
 
     // Capture stdout and stderr and log them
-    provision.stdout.on("data", (data) => {
+    provision.stdout.on("data", async (data) => {
       console.log(`stdout: ${data}`);
       // Filter lines containing instance IDs
       const ids = data.split("\n");
-
       ec2InstanceIds.push(...ids.filter((id) => id.startsWith("i-")));
+
+      // Send each log line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v2/messages", {
+          message: data.toString(), // Convert data to string and send as message
+        });
+      } catch (error) {
+        console.error("Error sending log message:", error);
+      }
     });
 
-    provision.stderr.on("data", (data) => {
+    provision.stderr.on("data", async (data) => {
       console.error(`stderr: ${data}`);
+
+      // Send each stderr error line to the API endpoint
+      try {
+        await axios.post("http://localhost:3000/api/v2/messages", {
+          message: data.toString(), // Convert data to string and send as message
+          isError: true, // Flag to indicate that this message is an error
+        });
+      } catch (error) {
+        console.error("Error sending error message:", error);
+      }
     });
 
     // Handle completion of the script execution
